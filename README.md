@@ -2,11 +2,13 @@
 
 **A little focus. A little rest.**
 
+A project by [MiuBitz](https://miubitz.github.io/).
+
 A quiet Windows Pomodoro app built with Tauri 2 and Rust. Choose one task, start the timer, and let focus sessions and breaks follow a simple rhythm.
 
 ![Pomodoro Timer in dark blue](docs/assets/app-dark.png)
 
-[Download for Windows](https://github.com/TheMIU/PomodoroTimer/raw/refs/heads/main/dist/PomodoroTimer.exe) · [How to use](#how-to-use) · [Build from source](#build-from-source)
+[Download for Windows](https://github.com/MiuBitz/PomodoroTimer/raw/refs/heads/main/dist/PomodoroTimer.exe) · [How to use](#how-to-use) · [Build from source](#build-from-source)
 
 ## What it does
 
@@ -117,7 +119,7 @@ python -m http.server 8000 --directory docs
 
 Publishing checklist:
 
-1. Create a GitHub repository named **PomodoroTimer** under **TheMIU** (the prepared download links use this name).
+1. Use the [MiuBitz/PomodoroTimer repository](https://github.com/MiuBitz/PomodoroTimer). Download and source links point here.
 2. Push this folder's source and `dist/PomodoroTimer.exe` to the `main` branch. If you choose a different owner or repository name, update links in this README and `docs/index.html`.
 3. In **Settings → Pages**, choose **Deploy from a branch**, **main**, and **/docs**. See [GitHub's publishing-source guide](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
 4. For a tagged release, attach `dist/PomodoroTimer.exe` as the Windows download.
