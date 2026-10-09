@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pomodoro Timer</title><link rel="stylesheet" href="style.css"><script src="app.js" defer></script></head>
+<body>
+<main class="app">
+<header><div><h1>Pomodoro</h1><p class="muted">A little focus. A little rest.</p></div><button id="settings" class="quiet"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></svg>Settings</button></header>
+<section class="timer" aria-label="Timer">
+<span id="phase" class="pill">Ready to focus</span>
+<div id="time" role="timer">25:00</div>
+<p id="caption" class="muted">Make room for one thing at a time.</p>
+<progress id="progress" max="1" value="0" aria-label="Session progress"></progress>
+<p id="cycle" class="muted">4 focus cycles</p>
+</section>
+<div class="controls"><button id="start" class="primary" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg><span class="button-label">Start focus</span></button><button id="pause" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><path id="pause-icon" d="M8 5v14M16 5v14"/></svg><span class="button-label">Pause</span></button><button id="reset" class="quiet" disabled><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11a9 9 0 1 1 3 8M3 4v7h7"/></svg>Reset</button></div>
+<label class="cycles">Focus cycles <input id="cycles" type="number" min="1" max="99" step="1" value="4" disabled></label>
+<footer><span id="routine" class="muted">25 min focus · 5 min break</span><span class="muted">Your pace, your day.</span></footer>
+<p id="error" role="alert"></p>
+</main>
+<dialog id="dialog" aria-labelledby="settings-title">
+<form id="form">
+<header><div><h2 id="settings-title">Settings</h2><p class="muted">Make the timer fit your routine.</p></div><button type="button" id="close" aria-label="Close settings" class="quiet"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>
+<div class="duration-grid"><label>Focus minutes<input name="work_minutes" type="number" min="1" max="180" required></label><label>Break minutes<input name="break_minutes" type="number" min="1" max="60" required></label><label>Cycles<input name="cycles" type="number" min="1" max="99" required></label></div>
+<p class="muted small">Duration and cycle changes apply to your next run.</p>
+<div class="appearance"><label>Theme<select name="theme_mode"><option value="dark">Dark</option><option value="light">Light</option></select></label><label>Color<select name="color_preset"><option value="blue">Blue</option><option value="violet">Violet</option><option value="sage">Sage</option><option value="amber">Amber</option></select></label></div>
+<div class="toggles"><label><input type="checkbox" name="start_with_windows"> Start with Windows</label><label><input type="checkbox" name="notifications_enabled"> Desktop notifications</label><label><input type="checkbox" name="sound_enabled"> Play a sound</label><label><input type="checkbox" name="minimize_to_tray"> Close to system tray</label></div>
+<p id="settings-error" role="alert"></p>
+<div class="modal-footer"><button type="button" id="cancel" class="quiet">Cancel</button><button id="save" class="primary"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>Save settings</button></div>
+</form></dialog>
+</body></html>

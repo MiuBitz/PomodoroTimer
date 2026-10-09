@@ -1,0 +1,19 @@
+# Build outputs
+/target/
+/gen/
+/Installer/Output/
+
+# Keep the portable download, matching DailyJournal.
+/dist/*
+!/dist/PomodoroTimer.exe
+
+# Local settings, tools, and OS files
+settings.json
+.vscode/
+.idea/
+*.tmp
+*.log
+*.swp
+Thumbs.db
+Desktop.ini
+.DS_Store

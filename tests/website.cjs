@@ -1,0 +1,64 @@
+const {chromium} = require(process.env.POMODORO_NODE_MODULES ? process.env.POMODORO_NODE_MODULES+'/playwright' : 'playwright');
+const http=require('http'),fs=require('fs'),path=require('path'),assert=require('assert');
+const root=path.resolve('docs');
+const server=http.createServer((req,res)=>{
+  const pathname=decodeURIComponent(req.url.split('?')[0]);
+  const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
+  if(!file.startsWith(root+path.sep)||!fs.existsSync(file)){res.writeHead(404);res.end('Not found');return;}
+  const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.woff2':'font/woff2','.png':'image/png','.ico':'image/x-icon','.txt':'text/plain'};
+  res.setHeader('Content-Type',mime[path.extname(file)]||'application/octet-stream');res.end(fs.readFileSync(file));
+});
+(async()=>{
+  await new Promise(r=>server.listen(0,'127.0.0.1',r));
+  const url='http://127.0.0.1:'+server.address().port;
+  const browser=await chromium.launch({channel:'msedge',headless:true});
+  try{
+    const page=await browser.newPage({viewport:{width:1440,height:1000}});
+    const errors=[],failed=[],requests=[];
+    page.on('pageerror',e=>errors.push(e.message));
+    page.on('requestfailed',r=>failed.push(r.url()));
+    page.on('request',r=>requests.push(r.url()));
+    await page.goto(url);await page.evaluate(()=>document.fonts.ready);
+    assert.equal(await page.title(),'Pomodoro Timer - A little focus. A little rest.');
+    assert.equal(await page.locator('h1').textContent(),'A little focus.A little rest.');
+    assert.equal(await page.locator('.step-card').count(),3);
+    assert.deepEqual(await page.locator('.ribbon-title').allTextContents(),['Focus','Rest','Repeat']);
+    assert.equal(await page.locator('.prompt-box').count(),0);
+    await page.locator('img[loading="lazy"]').scrollIntoViewIfNeeded();
+    await page.waitForFunction(()=>[...document.images].every(i=>i.complete&&i.naturalWidth>0));
+    await page.evaluate(()=>scrollTo(0,0));
+    assert(await page.locator('i[class*=fa-]').count()>30);
+    assert.equal(await page.locator('svg.site-icon').count(),0);
+    assert(await page.evaluate(()=>document.fonts.check('900 16px "Font Awesome 6 Free"')));
+    const brokenAnchors=await page.evaluate(()=>[...document.querySelectorAll('a[href^="#"]')].filter(a=>a.hash&&a.hash!=='#'&&!document.getElementById(a.hash.slice(1))).map(a=>a.hash));
+    assert.deepEqual(brokenAnchors,[]);
+    assert(!await page.evaluate(()=>document.body.textContent.includes('Daily Journal')));
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    const summary=page.locator('.faq details').first().locator('summary');
+    const arrow=()=>summary.evaluate(el=>getComputedStyle(el,'::after').transform);
+    const openArrow=await arrow();
+    assert.match(await summary.evaluate(el=>getComputedStyle(el,'::after').fontFamily),/Font Awesome 6 Free/);
+    await summary.click();
+    await page.waitForTimeout(250);
+    assert.notEqual(await arrow(),openArrow);
+    await summary.click();
+    assert.match(await page.locator('.closing .button.primary').textContent(),/Download for Windows/);
+    await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    await page.screenshot({path:'target/website-hero.png'});
+    await page.screenshot({path:'target/website-desktop.png',fullPage:true});
+    await page.setViewportSize({width:390,height:844});
+    await page.locator('#navToggle').click();
+    assert.equal(await page.locator('#navToggle').getAttribute('aria-expanded'),'true');
+    await page.locator('.drawer-link[href="#guide"]').click();
+    assert.equal(await page.locator('#navToggle').getAttribute('aria-expanded'),'false');
+    await page.locator('#navToggle').click();await page.keyboard.press('Escape');
+    assert.equal(await page.locator('#navDrawer').getAttribute('aria-hidden'),'true');
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+    await page.screenshot({path:'target/website-mobile-hero.png'});
+    await page.screenshot({path:'target/website-mobile.png',fullPage:true});
+    assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);
+    assert(requests.every(r=>r.startsWith(url)||r.startsWith('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/')));
+    console.log('Website passed: three steps, routine removed, FAQ chevrons, local assets, responsive layout, mobile navigation.');
+  }finally{await browser.close();server.close();}
+})().catch(e=>{console.error(e);server.close();process.exit(1)});

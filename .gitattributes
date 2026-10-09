@@ -1,0 +1,14 @@
+* text=auto
+*.rs text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.cjs text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.bat text eol=crlf
+*.exe binary
+*.ico binary
+*.png binary
+*.woff2 binary
